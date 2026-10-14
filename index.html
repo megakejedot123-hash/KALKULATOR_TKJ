@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TKJ I & Binary Network Toolstation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0a0f1d',
+                            card: '#111827',
+                            border: '#1e293b',
+                            accent: '#06b6d4',
+                            glow: '#00f0ff',
+                            purple: '#a855f7',
+                            green: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c16;
+            color: #f3f4f6;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glow-border {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+        .glow-border:focus-within {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1322;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row bg-[#080c16] text-gray-100">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full lg:w-64 bg-[#0d1322] border-b lg:border-b-0 lg:border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
+        <div>
+            <!-- Logo Header -->
+            <div class="flex items-center space-x-3 p-2 mb-6 border-b border-slate-800/80 pb-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-network-wired text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+                        TKJ TOOLKIT
+                    </h1>
+                    <span class="text-[10px] text-cyan-400/70 font-mono uppercase tracking-wider">Biner & Networking</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1.5" id="nav-tabs">
+                <button onclick="switchTab('subnetting')" id="btn-subnetting" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                    <i class="fa-solid fa-sitemap w-5 text-center"></i>
+                    <span>Subnetting IPv4</span>
+                </button>
+
+                <button onclick="switchTab('converter')" id="btn-converter" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent">
+                    <i class="fa-solid fa-calculator w-5 text-center"></i>
+                    <span>Konverter Basis Data</span>
+                </button>
+
+                <button onclick="switchTab('bitwise')" id="btn-bitwise" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent">
+                    <i class="fa-solid fa-microchip w-5 text-center"></i>
+                    <span>Operasi Bitwise</span>
+                </button>
+
+                <button onclick="switchTab('bandwidth')" id="btn-bandwidth" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent">
+                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                    <span>Kalkulator Bandwidth</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-8 pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
+            <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>System Ready</span>
+            </div>
+            <p class="mt-2 text-[11px] text-slate-600">TKJ Networking Tools v2.0</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
+
+        <!-- Toast Notification Box -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-cyan-400 px-4 py-3 rounded-xl border border-cyan-500/30 shadow-2xl flex items-center space-x-3 pointer-events-none">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toast-message" class="text-sm font-medium">Teks berhasil disalin!</span>
+        </div>
+
+        <!-- TAB 1: SUBNETTING IP CALCULATOR -->
+        <section id="tab-subnetting" class="tab-content space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-cyan-400"></i>
+                        Kalkulator Subnetting IPv4
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">Hitung parameter subnetting lengkap dari IP Address dan Subnet Mask/CIDR.</p>
+                </div>
+            </div>
+
+            <!-- Input Form Card -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    <div class="md:col-span-6">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">IP Address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-network-wired absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input type="text" id="ip-address" value="192.168.1.50" placeholder="e.g. 192.168.1.1" 
+                                class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 pl-10 pr-4 text-white code-font text-sm focus:outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Netmask / Prefix (CIDR)</label>
+                        <select id="cidr-select" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none transition-all">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <button onclick="calculateSubnet()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>Hitung</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subnet Results Display -->
+            <div id="subnet-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Cards will be populated by JS -->
+            </div>
+
+            <!-- Binary Subnet Detail Breakdown -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-4">
+                <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-binary text-cyan-400"></i> Visualisasi Biner Octet
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse code-font text-xs md:text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400">
+                                <th class="p-2">Tipe Parameter</th>
+                                <th class="p-2">Desimal</th>
+                                <th class="p-2">Representasi Biner</th>
+                            </tr>
+                        </thead>
+                        <tbody id="binary-table-body" class="divide-y divide-slate-800/50 text-slate-300">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KONVERTER BASIS DATA -->
+        <section id="tab-converter" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-calculator text-cyan-400"></i>
+                        Konverter Basis Data Real-time
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">Konversi langsung antara Biner, Desimal, Heksadesimal, dan Oktal secara presisi.</p>
+                </div>
+            </div>
+
+            <!-- Input Fields Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Desimal -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-4 shadow-xl relative group">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Desimal (Base-10)</label>
+                        <button onclick="copyField('val-decimal')" class="text-slate-500 hover:text-cyan-400 text-xs transition-colors"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+                    <input type="text" id="val-decimal" oninput="convertBase('decimal')" placeholder="0" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-3 px-4 text-white code-font text-lg focus:outline-none transition-all">
+                </div>
+
+                <!-- Biner -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-4 shadow-xl relative group">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-purple-400 uppercase tracking-wider">Biner (Base-2)</label>
+                        <button onclick="copyField('val-binary')" class="text-slate-500 hover:text-purple-400 text-xs transition-colors"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+                    <input type="text" id="val-binary" oninput="convertBase('binary')" placeholder="0" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-purple-500 rounded-xl py-3 px-4 text-white code-font text-lg focus:outline-none transition-all">
+                </div>
+
+                <!-- Heksadesimal -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-4 shadow-xl relative group">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Heksadesimal (Base-16)</label>
+                        <button onclick="copyField('val-hex')" class="text-slate-500 hover:text-emerald-400 text-xs transition-colors"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+                    <input type="text" id="val-hex" oninput="convertBase('hex')" placeholder="0" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-emerald-500 rounded-xl py-3 px-4 text-white code-font text-lg focus:outline-none transition-all uppercase">
+                </div>
+
+                <!-- Oktal -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-4 shadow-xl relative group">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Oktal (Base-8)</label>
+                        <button onclick="copyField('val-octal')" class="text-slate-500 hover:text-amber-400 text-xs transition-colors"><i class="fa-regular fa-copy"></i> Copy</button>
+                    </div>
+                    <input type="text" id="val-octal" oninput="convertBase('octal')" placeholder="0" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-amber-500 rounded-xl py-3 px-4 text-white code-font text-lg focus:outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Steps & Explanation Section -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-3">
+                <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-cyan-400"></i> Langkah & Penjelasan Konversi
+                </h3>
+                <div id="conversion-steps" class="bg-[#0b0f19] border border-slate-800 rounded-xl p-4 code-font text-xs text-slate-300 space-y-2 leading-relaxed">
+                    <!-- Conversion steps rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: OPERASI LOGIKA BITWISE -->
+        <section id="tab-bitwise" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-microchip text-cyan-400"></i>
+                        Kalkulator Operasi Logika Bitwise
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">Hitung operasi gerbang logika (AND, OR, XOR, NOT, NAND, NOR, XNOR) per-bit.</p>
+                </div>
+            </div>
+
+            <!-- Input Controls -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    <!-- Input A -->
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Input A (Biner / Desimal)</label>
+                        <input type="text" id="bw-input-a" value="10101010" placeholder="misal: 10101010 atau 170" 
+                            class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                    </div>
+
+                    <!-- Operator Select -->
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Operator Logika</label>
+                        <select id="bw-operator" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                            <option value="AND">AND (&)</option>
+                            <option value="OR">OR (|)</option>
+                            <option value="XOR">XOR (^)</option>
+                            <option value="NOT">NOT (~) [Hanya Operand A]</option>
+                            <option value="NAND">NAND</option>
+                            <option value="NOR">NOR</option>
+                            <option value="XNOR">XNOR</option>
+                        </select>
+                    </div>
+
+                    <!-- Input B -->
+                    <div class="md:col-span-4" id="bw-b-container">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Input B (Biner / Desimal)</label>
+                        <input type="text" id="bw-input-b" value="11001100" placeholder="misal: 11001100 atau 204" 
+                            class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-end">
+                    <button onclick="calculateBitwise()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Jalankan Operasi</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bitwise Result Visualizer -->
+            <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
+                <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-cyan-400"></i> Visualisasi Hasil Bitwise
+                </h3>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-[#0b0f19] border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 block mb-1">Hasil Biner</span>
+                        <div id="bw-res-bin" class="code-font text-lg text-cyan-400 font-bold truncate">00000000</div>
+                    </div>
+                    <div class="bg-[#0b0f19] border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 block mb-1">Hasil Desimal</span>
+                        <div id="bw-res-dec" class="code-font text-lg text-purple-400 font-bold">0</div>
+                    </div>
+                    <div class="bg-[#0b0f19] border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 block mb-1">Hasil Heksadesimal</span>
+                        <div id="bw-res-hex" class="code-font text-lg text-emerald-400 font-bold">0x00</div>
+                    </div>
+                </div>
+
+                <!-- Bit Alignment Table -->
+                <div class="overflow-x-auto">
+                    <div id="bit-grid" class="inline-block min-w-full font-mono text-center space-y-2 p-2 bg-[#0b0f19] border border-slate-800 rounded-xl">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: KALKULATOR BANDWIDTH & TRANSFER RATE -->
+        <section id="tab-bandwidth" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-gauge-high text-cyan-400"></i>
+                        Kalkulator Bandwidth & Waktu Transfer
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">Hitung estimasi durasi download/upload dan konversi kecepatan jaringan.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Transfer Time Calculator -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-4">
+                    <h3 class="text-base font-bold text-slate-200 border-b border-slate-800 pb-2">
+                        <i class="fa-solid fa-stopwatch text-cyan-400 mr-2"></i>Estimasi Waktu Download / Upload
+                    </h3>
+
+                    <!-- File Size Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Ukuran File</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="bw-filesize" value="1" min="0.1" step="any" oninput="calculateTransferTime()" class="flex-1 bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                            <select id="bw-filesize-unit" onchange="calculateTransferTime()" class="bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                                <option value="MB">MB (Megabyte)</option>
+                                <option value="GB" selected>GB (Gigabyte)</option>
+                                <option value="TB">TB (Terabyte)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Speed Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Kecepatan Internet</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="bw-speed" value="50" min="0.1" step="any" oninput="calculateTransferTime()" class="flex-1 bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                            <select id="bw-speed-unit" onchange="calculateTransferTime()" class="bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                                <option value="Kbps">Kbps (Kilobit/s)</option>
+                                <option value="Mbps" selected>Mbps (Megabit/s)</option>
+                                <option value="Gbps">Gbps (Gigabit/s)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Result Box -->
+                    <div class="bg-[#0b0f19] border border-slate-800 rounded-xl p-4 mt-4 space-y-2">
+                        <span class="text-xs text-slate-400 block">Estimasi Waktu Selesai:</span>
+                        <div id="transfer-time-result" class="text-2xl font-bold text-cyan-400 code-font">00:02:43</div>
+                        <p id="transfer-rate-sub" class="text-xs text-slate-400">Kecepatan riil unduh: ~6.25 MB/s</p>
+                    </div>
+                </div>
+
+                <!-- Network Unit Quick Converter -->
+                <div class="bg-[#111827] border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-4">
+                    <h3 class="text-base font-bold text-slate-200 border-b border-slate-800 pb-2">
+                        <i class="fa-solid fa-right-left text-cyan-400 mr-2"></i>Konversi Mbps ke MB/s & Unit
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Kecepatan Jaringan (Mbps)</label>
+                        <input type="number" id="conv-mbps" value="100" oninput="convertSpeedUnit()" class="w-full bg-[#0b0f19] border border-slate-700 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white code-font text-sm focus:outline-none">
+                    </div>
+
+                    <div class="space-y-2 pt-2 code-font text-sm">
+                        <div class="flex justify-between items-center p-3 bg-[#0b0f19] rounded-xl border border-slate-800">
+                            <span class="text-slate-400">Transfer Rate (MB/s):</span>
+                            <span id="unit-mbs" class="font-bold text-emerald-400">12.5 MB/s</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-[#0b0f19] rounded-xl border border-slate-800">
+                            <span class="text-slate-400">Kilobit / sec (Kbps):</span>
+                            <span id="unit-kbps" class="font-bold text-purple-400">100,000 Kbps</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-[#0b0f19] rounded-xl border border-slate-800">
+                            <span class="text-slate-400">Gigabit / sec (Gbps):</span>
+                            <span id="unit-gbps" class="font-bold text-amber-400">0.1 Gbps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        /* --- UTILITY & NAVIGATION FUNCTIONS --- */
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active style from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent";
+            });
+
+            // Show current tab content
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Set active tab button style
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.className = "tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30";
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function copyField(elementId) {
+            const input = document.getElementById(elementId);
+            if (input && input.value) {
+                navigator.clipboard.writeText(input.value).then(() => {
+                    showToast("Teks berhasil disalin!");
+                }).catch(() => {
+                    // Fallback
+                    input.select();
+                    document.execCommand('copy');
+                    showToast("Teks berhasil disalin!");
+                });
+            }
+        }
+
+        /* --- 1. IP SUBNETTING CALCULATOR LOGIC --- */
+        function initCIDRDropdown() {
+            const select = document.getElementById('cidr-select');
+            select.innerHTML = '';
+            for (let i = 32; i >= 1; i--) {
+                const mask = cidrToSubnetMask(i);
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = `/${i} (${mask})`;
+                if (i === 24) option.selected = true;
+                select.appendChild(option);
+            }
+        }
+
+        function ipToInt(ip) {
+            return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+        }
+
+        function intToIp(int) {
+            return [
+                (int >>> 24) & 255,
+                (int >>> 16) & 255,
+                (int >>> 8) & 255,
+                int & 255
+            ].join('.');
+        }
+
+        function ipToBinaryStr(ip) {
+            return ip.split('.').map(octet => {
+                return parseInt(octet, 10).toString(2).padStart(8, '0');
+            }).join('.');
+        }
+
+        function cidrToSubnetMask(cidr) {
+            const maskInt = (0xFFFFFFFF << (32 - cidr)) >>> 0;
+            return intToIp(maskInt);
+        }
+
+        function getIPClass(ipStr) {
+            const firstOctet = parseInt(ipStr.split('.')[0], 10);
+            if (firstOctet >= 1 && firstOctet <= 126) return { class: 'A', type: 'Unicast Public/Private' };
+            if (firstOctet === 127) return { class: 'A', type: 'Loopback Address' };
+            if (firstOctet >= 128 && firstOctet <= 191) return { class: 'B', type: 'Unicast Public/Private' };
+            if (firstOctet >= 192 && firstOctet <= 223) return { class: 'C', type: 'Unicast Public/Private' };
+            if (firstOctet >= 224 && firstOctet <= 239) return { class: 'D', type: 'Multicast' };
+            if (firstOctet >= 240 && firstOctet <= 255) return { class: 'E', type: 'Experimental / Reserved' };
+            return { class: 'Unknown', type: 'Unknown' };
+        }
+
+        function getIPScopeType(ipStr) {
+            const octets = ipStr.split('.').map(Number);
+            if (octets[0] === 10) return 'Private (RFC 1918)';
+            if (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) return 'Private (RFC 1918)';
+            if (octets[0] === 192 && octets[1] === 168) return 'Private (RFC 1918)';
+            if (octets[0] === 127) return 'Loopback';
+            if (octets[0] === 169 && octets[1] === 254) return 'APIPA (Link-Local)';
+            return 'Public Address';
+        }
+
+        function calculateSubnet() {
+            const ipInput = document.getElementById('ip-address').value.trim();
+            const cidr = parseInt(document.getElementById('cidr-select').value, 10);
+
+            // Basic IP Regex Validation
+            const ipRegex = /^^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            if (!ipRegex.test(ipInput)) {
+                showToast("Format IP Address tidak valid!");
+                return;
+            }
+
+            const ipInt = ipToInt(ipInput);
+            const maskInt = (0xFFFFFFFF << (32 - cidr)) >>> 0;
+            const wildcardInt = (~maskInt) >>> 0;
+
+            const netInt = (ipInt & maskInt) >>> 0;
+            const bcastInt = (netInt | wildcardInt) >>> 0;
+
+            const netStr = intToIp(netInt);
+            const maskStr = intToIp(maskInt);
+            const wildcardStr = intToIp(wildcardInt);
+            const bcastStr = intToIp(bcastInt);
+
+            let totalHosts = Math.pow(2, 32 - cidr);
+            let usableHosts = cidr >= 31 ? (cidr === 31 ? 2 : 1) : Math.max(0, totalHosts - 2);
+
+            let firstUsableStr = cidr >= 31 ? netStr : intToIp(netInt + 1);
+            let lastUsableStr = cidr >= 31 ? bcastStr : intToIp(bcastInt - 1);
+
+            if (cidr === 32) {
+                firstUsableStr = netStr;
+                lastUsableStr = netStr;
+            }
+
+            const ipClassInfo = getIPClass(ipInput);
+            const ipScope = getIPScopeType(ipInput);
+
+            // Render Results Cards
+            const resultsContainer = document.getElementById('subnet-results');
+            const dataItems = [
+                { title: 'Network Address', val: netStr, icon: 'fa-network-wired', color: 'text-cyan-400' },
+                { title: 'Broadcast Address', val: bcastStr, icon: 'fa-tower-cell', color: 'text-purple-400' },
+                { title: 'Subnet Mask', val: `${maskStr} (/${cidr})`, icon: 'fa-shield-halved', color: 'text-emerald-400' },
+                { title: 'Wildcard Mask', val: wildcardStr, icon: 'fa-mask', color: 'text-amber-400' },
+                { title: 'First Usable IP', val: firstUsableStr, icon: 'fa-play', color: 'text-blue-400' },
+                { title: 'Last Usable IP', val: lastUsableStr, icon: 'fa-flag-checkered', color: 'text-pink-400' },
+                { title: 'Jumlah Host Usable', val: `${usableHosts.toLocaleString()} Host`, icon: 'fa-users', color: 'text-indigo-400' },
+                { title: 'Total IP Subnet', val: `${totalHosts.toLocaleString()} IP`, icon: 'fa-list-ol', color: 'text-slate-300' },
+                { title: 'Kelas & Tipe IP', val: `Kelas ${ipClassInfo.class} (${ipScope})`, icon: 'fa-circle-info', color: 'text-teal-400' }
+            ];
+
+            resultsContainer.innerHTML = dataItems.map(item => `
+                <div class="bg-[#111827] border border-slate-800 rounded-xl p-4 shadow-md hover:border-slate-700 transition-all flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase text-slate-400 block">${item.title}</span>
+                        <span class="code-font font-bold text-base md:text-lg ${item.color} mt-1 block">${item.val}</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-slate-800/80 flex items-center justify-center ${item.color}">
+                        <i class="fa-solid ${item.icon}"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Binary Breakdown Table
+            const binaryTable = document.getElementById('binary-table-body');
+            binaryTable.innerHTML = `
+                <tr>
+                    <td class="p-2 font-medium">IP Address</td>
+                    <td class="p-2 text-cyan-400">${ipInput}</td>
+                    <td class="p-2 text-slate-400">${ipToBinaryStr(ipInput)}</td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-medium">Subnet Mask</td>
+                    <td class="p-2 text-emerald-400">${maskStr}</td>
+                    <td class="p-2 text-slate-400">${ipToBinaryStr(maskStr)}</td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-medium">Network Address</td>
+                    <td class="p-2 text-purple-400">${netStr}</td>
+                    <td class="p-2 text-slate-400">${ipToBinaryStr(netStr)}</td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-medium">Broadcast Address</td>
+                    <td class="p-2 text-pink-400">${bcastStr}</td>
+                    <td class="p-2 text-slate-400">${ipToBinaryStr(bcastStr)}</td>
+                </tr>
+            `;
+        }
+
+        /* --- 2. BASE CONVERTER LOGIC --- */
+        function convertBase(source) {
+            const decInput = document.getElementById('val-decimal');
+            const binInput = document.getElementById('val-binary');
+            const hexInput = document.getElementById('val-hex');
+            const octInput = document.getElementById('val-octal');
+            const stepsDiv = document.getElementById('conversion-steps');
+
+            let num = 0;
+            let srcVal = '';
+
+            try {
+                if (source === 'decimal') {
+                    srcVal = decInput.value.trim();
+                    if (srcVal === '') { clearConverterFields(); return; }
+                    num = parseInt(srcVal, 10);
+                } else if (source === 'binary') {
+                    srcVal = binInput.value.trim().replace(/\s+/g, '');
+                    if (srcVal === '') { clearConverterFields(); return; }
+                    num = parseInt(srcVal, 2);
+                } else if (source === 'hex') {
+                    srcVal = hexInput.value.trim();
+                    if (srcVal === '') { clearConverterFields(); return; }
+                    num = parseInt(srcVal, 16);
+                } else if (source === 'octal') {
+                    srcVal = octInput.value.trim();
+                    if (srcVal === '') { clearConverterFields(); return; }
+                    num = parseInt(srcVal, 8);
+                }
+
+                if (isNaN(num) || num < 0) {
+                    stepsDiv.innerHTML = `<span class="text-rose-400">Input tidak valid! Pastikan format angka sesuai dengan basisnya.</span>`;
+                    return;
+                }
+
+                // Update non-source fields
+                if (source !== 'decimal') decInput.value = num.toString(10);
+                if (source !== 'binary') binInput.value = num.toString(2);
+                if (source !== 'hex') hexInput.value = num.toString(16).toUpperCase();
+                if (source !== 'octal') octInput.value = num.toString(8);
+
+                // Build step-by-step explanation
+                let stepsHTML = `<p class="font-bold text-cyan-400 border-b border-slate-800 pb-1 mb-2">Penjelasan Konversi (Nilai Desimal: ${num}):</p>`;
+                
+                stepsHTML += `<div><strong class="text-purple-400">Ke Biner:</strong> Bagi ${num} terus menerus dengan 2, catat sisa pembagiannya. -> <span class="text-emerald-400">${num.toString(2)}</span></div>`;
+                stepsHTML += `<div><strong class="text-emerald-400">Ke Heksadesimal:</strong> Kelompokkan tiap 4 bit biner dari kanan, ubah ke simbol Hex (0-9, A-F). -> <span class="text-emerald-400">0x${num.toString(16).toUpperCase()}</span></div>`;
+                stepsHTML += `<div><strong class="text-amber-400">Ke Oktal:</strong> Kelompokkan tiap 3 bit biner dari kanan, ubah ke angka Oktal (0-7). -> <span class="text-emerald-400">${num.toString(8)} (base-8)</span></div>`;
+
+                stepsDiv.innerHTML = stepsHTML;
+
+            } catch (err) {
+                stepsDiv.innerHTML = `<span class="text-rose-400">Terjadi kesalahan perhitungan.</span>`;
+            }
+        }
+
+        function clearConverterFields() {
+            document.getElementById('val-decimal').value = '';
+            document.getElementById('val-binary').value = '';
+            document.getElementById('val-hex').value = '';
+            document.getElementById('val-octal').value = '';
+            document.getElementById('conversion-steps').innerHTML = 'Masukkan nilai pada salah satu bidang di atas untuk melihat konversi.';
+        }
+
+        /* --- 3. BITWISE LOGIC CALCULATOR --- */
+        function calculateBitwise() {
+            const inputAStr = document.getElementById('bw-input-a').value.trim();
+            const inputBStr = document.getElementById('bw-input-b').value.trim();
+            const operator = document.getElementById('bw-operator').value;
+
+            // Helper to parse input as Integer (Supports binary strings like '1010' or decimal numbers)
+            function parseInput(str) {
+                if (/^[01]+$/.test(str) && str.length > 1) {
+                    return parseInt(str, 2);
+                }
+                return parseInt(str, 10);
+            }
+
+            let numA = parseInput(inputAStr);
+            let numB = parseInput(inputBStr);
+
+            if (isNaN(numA)) numA = 0;
+            if (isNaN(numB)) numB = 0;
+
+            let result = 0;
+            switch (operator) {
+                case 'AND': result = numA & numB; break;
+                case 'OR':  result = numA | numB; break;
+                case 'XOR': result = numA ^ numB; break;
+                case 'NOT': result = ~numA; break;
+                case 'NAND': result = ~(numA & numB); break;
+                case 'NOR':  result = ~(numA | numB); break;
+                case 'XNOR': result = ~(numA ^ numB); break;
+            }
+
+            // Unsign for display
+            result = result >>> 0;
+            
+            // Limit to 16 bits for clean alignment in layout
+            const binA = (numA >>> 0).toString(2).padStart(8, '0');
+            const binB = (numB >>> 0).toString(2).padStart(8, '0');
+            const maxLen = Math.max(binA.length, binB.length, 8);
+
+            const padA = binA.padStart(maxLen, '0');
+            const padB = binB.padStart(maxLen, '0');
+            const padRes = result.toString(2).padStart(maxLen, '0').slice(-maxLen);
+
+            document.getElementById('bw-res-bin').innerText = padRes;
+            document.getElementById('bw-res-dec').innerText = result;
+            document.getElementById('bw-res-hex').innerText = '0x' + result.toString(16).toUpperCase();
+
+            // Render visual grid alignment
+            let gridHTML = `
+                <div class="grid grid-cols-${maxLen + 2} gap-1 items-center font-bold text-xs md:text-sm py-1">
+                    <span class="text-left text-slate-400 col-span-2">Input A:</span>
+                    ${padA.split('').map(b => `<span class="bg-slate-800 p-1.5 rounded text-cyan-400">${b}</span>`).join('')}
+                </div>
+            `;
+
+            if (operator !== 'NOT') {
+                gridHTML += `
+                    <div class="grid grid-cols-${maxLen + 2} gap-1 items-center font-bold text-xs md:text-sm py-1">
+                        <span class="text-left text-slate-400 col-span-2">Input B (${operator}):</span>
+                        ${padB.split('').map(b => `<span class="bg-slate-800 p-1.5 rounded text-purple-400">${b}</span>`).join('')}
+                    </div>
+                `;
+            }
+
+            gridHTML += `
+                <div class="border-t border-slate-700 my-1"></div>
+                <div class="grid grid-cols-${maxLen + 2} gap-1 items-center font-bold text-xs md:text-sm py-1">
+                    <span class="text-left text-emerald-400 col-span-2">Hasil:</span>
+                    ${padRes.split('').map(b => `<span class="bg-emerald-500/20 border border-emerald-500/40 p-1.5 rounded text-emerald-300">${b}</span>`).join('')}
+                </div>
+            `;
+
+            document.getElementById('bit-grid').innerHTML = gridHTML;
+        }
+
+        // Toggle visibility of Input B depending on Operator
+        document.getElementById('bw-operator').addEventListener('change', (e) => {
+            const containerB = document.getElementById('bw-b-container');
+            if (e.target.value === 'NOT') {
+                containerB.classList.add('opacity-40', 'pointer-events-none');
+            } else {
+                containerB.classList.remove('opacity-40', 'pointer-events-none');
+            }
+        });
+
+        /* --- 4. BANDWIDTH & TRANSFER RATE CALCULATOR --- */
+        function calculateTransferTime() {
+            const size = parseFloat(document.getElementById('bw-filesize').value) || 0;
+            const sizeUnit = document.getElementById('bw-filesize-unit').value;
+            const speed = parseFloat(document.getElementById('bw-speed').value) || 0;
+            const speedUnit = document.getElementById('bw-speed-unit').value;
+
+            if (size <= 0 || speed <= 0) {
+                document.getElementById('transfer-time-result').innerText = "00:00:00";
+                return;
+            }
+
+            // Convert size to Megabits (Mb)
+            let sizeMb = 0;
+            if (sizeUnit === 'MB') sizeMb = size * 8;
+            else if (sizeUnit === 'GB') sizeMb = size * 1024 * 8;
+            else if (sizeUnit === 'TB') sizeMb = size * 1024 * 1024 * 8;
+
+            // Convert speed to Megabits per second (Mbps)
+            let speedMbps = 0;
+            if (speedUnit === 'Kbps') speedMbps = speed / 1000;
+            else if (speedUnit === 'Mbps') speedMbps = speed;
+            else if (speedUnit === 'Gbps') speedMbps = speed * 1000;
+
+            const totalSeconds = sizeMb / speedMbps;
+
+            // Format seconds into HH:MM:SS
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+
+            const formattedTime = [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+
+            const speedMBs = (speedMbps / 8).toFixed(2);
+
+            document.getElementById('transfer-time-result').innerText = formattedTime;
+            document.getElementById('transfer-rate-sub').innerText = `Kecepatan riil unduh: ~${speedMBs} MB/s`;
+        }
+
+        function convertSpeedUnit() {
+            const mbps = parseFloat(document.getElementById('conv-mbps').value) || 0;
+            
+            const mbs = (mbps / 8).toFixed(2);
+            const kbps = (mbps * 1000).toLocaleString();
+            const gbps = (mbps / 1000).toFixed(3);
+
+            document.getElementById('unit-mbs').innerText = `${mbs} MB/s`;
+            document.getElementById('unit-kbps').innerText = `${kbps} Kbps`;
+            document.getElementById('unit-gbps').innerText = `${gbps} Gbps`;
+        }
+
+        /* --- INITIALIZATION ON LOAD --- */
+        window.onload = function() {
+            initCIDRDropdown();
+            calculateSubnet();
+            convertBase('decimal');
+            calculateBitwise();
+            calculateTransferTime();
+            convertSpeedUnit();
+        };
+    </script>
+</body>
+</html>
